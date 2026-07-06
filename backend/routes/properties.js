@@ -1,0 +1,98 @@
+import express from 'express';
+const router = express.Router();
+import db from '../db.js';
+
+router.get('/', async (req, res) => {
+    try{
+        const { city, zipcode, minPrice, maxPrice, beds, baths} = req.query;
+        const limit = parseInt(req.query.limit, 10) || 20;
+        const offset = parseInt(req.query.offset, 10) || 0;
+
+
+        const errors = [];
+        //Validation
+        if(Number.isNaN(Number(limit)) || limit <= 0 || limit > 100){
+            errors.push('limit must be a positive integer between 0 and 100');
+        }
+
+        if(Number.isNaN(Number(offset)) || offset < 0){
+            errors.push('offset must be a non-negative integer');
+        }
+
+        if(minPrice!==undefined && (isNaN(Number(minPrice)) || Number(minPrice) < 0)){
+            errors.push('minPrice must be a non-negative number');
+        }
+
+        if(maxPrice!==undefined && (isNaN(Number(maxPrice)) || Number(maxPrice) < 0)){
+            errors.push('maxPrice must be a non-negative number');
+        }
+
+        if(beds!==undefined && (!Number.isInteger(Number(beds)) || Number(beds)<0)){
+            errors.push('beds must be a non-negative integer');
+        }
+
+        if(baths!==undefined && (!Number.isInteger(Number(baths)) || Number(baths)<0)){
+            errors.push('baths must be a non-negative integer');
+        }
+
+        if(errors.length>0){
+            return res.status(400).json({ error: 'Invalid query parameters', details: errors});
+        }
+
+
+        const conditions = [];
+        const params = [];
+
+        if(city){
+            conditions.push('LOWER(TRIM(L_City)) = LOWER(TRIM(?))');
+            params.push(city);
+        }
+        if(zipcode){
+            conditions.push('L_Zip = ?');
+            params.push(zipcode);
+        }
+        if(minPrice !== undefined){
+            conditions.push('L_SystemPrice >= ?');
+            params.push(parseFloat(minPrice));
+        }
+        if(maxPrice !== undefined){
+            conditions.push('L_SystemPrice <= ?');
+            params.push(parseFloat(maxPrice));
+        }
+        if(beds !== undefined){
+            conditions.push('L_Keyword2 = ?');
+            params.push(parseInt(beds,10));
+        }
+        if(baths !== undefined){
+            conditions.push('LM_Dec_3 = ?');
+            params.push(parseInt(baths, 10));
+        }
+
+        const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+        //pagination
+        const [countRows] = await db.query(
+            `SELECT COUNT(*) AS total FROM rets_property ${whereClause}`, params
+        );
+        const total = countRows[0].total;
+
+        const [rows] = await db.query(
+            `SELECT * FROM rets_property ${whereClause} LIMIT ? OFFSET ?`,
+            [...params, limit, offset]
+        );
+
+        res.json({
+            total,
+            limit,
+            offset,
+            result: rows,
+        });
+
+    }catch(err){
+        console.error(err);
+        res.status(500).json({error: 'Internal Server Error'});
+    }
+});
+
+export default router;
+

@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import db from './db.js';
 import dotenv from 'dotenv';
+import propertiesRouter from './routes/properties.js';
+
+
+
 dotenv.config();
 //require('dotenv').config;
 
@@ -30,3 +34,5 @@ app.get('/api/health', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is listening on Port ${PORT}`);
 });
+
+app.use('/api/properties', propertiesRouter);
