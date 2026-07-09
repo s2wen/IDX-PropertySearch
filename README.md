@@ -76,5 +76,32 @@ This should return the connection status to the database.
 ## Week 3
 Property search endpoint with filters and indexing.
 
+### Search Endpoint
+Make sure the docker container is running with `docker ps`, and run the server with `npm run dev`.
 
+When queried with the following parameters:
+```
+GET
+/api/properties?city=Portland&minPrice=300000&beds=3&limit=20&offset=0
+```
+
+Should return something with the following shape:
+```
+{ "total": 87, "limit": 20, "offset": 0, "results": [...] }
+```
+
+Filter supports city, zipcode, minPrice, maxPrice, beds, baths; these are listed as L_City, L_Zip, L_SystemPrice, L_Keyword2, LM_Dec_3 in the property sql file respectively. Invalid inputs should return 400. This can be tested by the following bash command:
+```
+curl "http://localhost:5001/api/properties?city=Acton&limit=20&offset=0"
+```
+Where parameters can be exchanged for other values, and separated by &.
+
+### Indexing
+Check which indexes the database may already have with command `SHOW INDEX FROM rets_property;`.
+For columns without an index, add an index through `CREATE INDEX [index name] ON rets_property ([column name]);` There may be an error at this point with the message "ERROR 1067 (42000): Invalid default value for 'active_check'". This is because MySQL8 strict mode may reject some default value the sql file holds. Fix this by temporarily disabling strict mode with command `SET sql_mode = '';`.
+
+Running EXPLAIN on the table before and after adding indexes should show that the number of rows it checks decreases, and that your new indexes are being used. The following is an example of an EXPLAIN you can run.
+```
+EXPLAIN SELECT * FROM rets_property WHERE L_SystemPrice >= 300000;
+```
 
