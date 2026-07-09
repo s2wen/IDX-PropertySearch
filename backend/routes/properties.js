@@ -2,6 +2,7 @@ import express from 'express';
 const router = express.Router();
 import db from '../db.js';
 
+//property search w/ filters
 router.get('/', async (req, res) => {
     try{
         const { city, zipcode, minPrice, maxPrice, beds, baths} = req.query;
@@ -93,6 +94,69 @@ router.get('/', async (req, res) => {
         res.status(500).json({error: 'Internal Server Error'});
     }
 });
+
+//openhouses by id
+router.get('/:id/openhouses', async (req, res) => {
+    try{
+        const { id } = req.params;
+
+        //validation: id of numbers between 9 to 10 digits
+        if(!/^\d{9,10}$/.test(id)){
+            return res.status(400).json({error: 'id has to be a string of integers'});
+        }
+
+        //Check whether property exists
+        const [rows] = await db.query(
+            'SELECT * FROM rets_property WHERE L_ListingID = ?',
+            [id]
+        );
+
+        if(rows.length===0){
+            return res.status(404).json({error: 'Property not found'});
+        }
+
+        //If property exists, return all matching openhouse events
+        const [openHouseRows] = await db.query(
+            `SELECT * FROM rets_openhouse WHERE L_ListingID = ?
+            ORDER BY OH_StartDate ASC, OH_StartTime ASC`,
+            [id]
+        );
+
+        res.json(openHouseRows);
+    }catch(err){
+        console.log(err);
+        return res.status(500).json({error: 'Internal Server Error'});
+    }
+});
+
+//return property by id
+router.get('/:id', async (req, res) => {
+    try{
+        const { id } = req.params;
+
+        //validation: id of numbers between 9 to 10 digits
+        if(!/^\d{9,10}$/.test(id)){
+            return res.status(400).json({error: 'id has to be a string of integers'});
+        }
+
+        const [rows] = await db.query(
+            'SELECT * FROM rets_property WHERE L_ListingID = ?',
+            [id]
+        );
+
+        if(rows.length===0){
+            return res.status(404).json({error: 'Property not found'});
+        }
+
+        res.json(rows[0]);
+    }catch(err){
+        console.error(err);
+        return res.status(500).json({error: 'Internal Server Error'});
+    }
+    
+});
+
+
 
 export default router;
 
