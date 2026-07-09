@@ -13,6 +13,25 @@ const app = express();
 
 const PORT = process.env.PORT;
 
+//middleware
+app.use(cors());
+app.use(express.json());
+
+//request logging middleware
+app.use((req, res, next) =>{
+    console.log("Middleware Executed");
+    const start = Date.now();
+
+    res.on('finish', () =>{
+        const duration = Date.now()-start;
+        const date = new Date();
+        console.log(`${date}: ${req.method}, ${req.originalUrl}, ${duration}ms`);
+    })
+
+    next();
+})
+
+//health checkpoint
 app.get('/api/health', async (req, res) => {
     try{
         await db.query('SELECT 1');
@@ -35,4 +54,6 @@ app.listen(PORT, () => {
     console.log(`Server is listening on Port ${PORT}`);
 });
 
+//properties router
 app.use('/api/properties', propertiesRouter);
+
