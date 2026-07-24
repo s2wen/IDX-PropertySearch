@@ -32,8 +32,8 @@ router.get('/', async (req, res) => {
             errors.push('beds must be a non-negative integer');
         }
 
-        if(baths!==undefined && (!Number.isInteger(Number(baths)) || Number(baths)<0)){
-            errors.push('baths must be a non-negative integer');
+        if(baths!==undefined && (isNaN(Number(baths)) || Number(baths)<0)){
+            errors.push('baths must be a non-negative number');
         }
 
         if(errors.length>0){
@@ -66,7 +66,7 @@ router.get('/', async (req, res) => {
         }
         if(baths !== undefined){
             conditions.push('LM_Dec_3 = ?');
-            params.push(parseInt(baths, 10));
+            params.push(parseFloat(baths, 10));
         }
 
         const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
