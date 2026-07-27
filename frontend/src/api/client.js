@@ -10,8 +10,19 @@ async function apiFetch(url, options={}){
     }
 
     if(!response.ok){
-        const errorText = await response.json();
-        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+        let errorMessage;
+        try{
+            const errorData = await response.json();
+            errorMessage = typeof errorData === 'object' 
+                ? (errorData.message || errorData.error || JSON.stringify(errorData))
+                : errorData;
+            throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+        }catch(err){
+            errorMessage = (err.text && typeof err.text === 'function') 
+            ? await err.text() 
+            : (err.message || response?.statusText || 'Internal Server Error');
+        }
+        throw new Error(`HTTP ${response.status}: ${errorMessage}`);
     }
     return response.json();
 }
