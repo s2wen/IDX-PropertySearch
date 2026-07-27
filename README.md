@@ -105,3 +105,40 @@ Running EXPLAIN on the table before and after adding indexes should show that th
 EXPLAIN SELECT * FROM rets_property WHERE L_SystemPrice >= 300000;
 ```
 
+---
+
+## Week 4
+Property by ID and open houses by property ID.
+
+To get a full property object:
+```
+curl "http://localhost:5001/api/properties/[id]"
+```
+
+To check openhouse events for a specific property:
+```
+curl "http://localhost:5001/api/properties/[id]/openhouses"
+```
+This may return an empty array. To check using an id that has openhouses, can use the following command to check in the sql files.
+
+```
+SELECT p.L_ListingID 
+    -> FROM rets_property p
+    -> INNER JOIN rets_openhouse o ON p.L_ListingID = o.L_ListingID
+    -> LIMIT 5;
+```
+This will return ids that appear in both properties and openhouses.
+
+---
+
+## Week 5
+A React frontend that fetches and displays a grid of property cards.
+
+The frontend runs on port 3000, and can be accessed at the address http://localhost:3000
+
+---
+
+## Week 6
+
+
+
