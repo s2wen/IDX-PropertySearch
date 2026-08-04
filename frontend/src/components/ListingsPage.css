@@ -1,26 +1,37 @@
 .listings-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 2rem 1rem;
+}
+
+.listings-page h1 {
+  margin-bottom: 1.5rem;
+  color: #333;
 }
 
 .listings-count {
+  margin: 1rem 0;
   color: #666;
-  margin-bottom: 24px;
+  font-size: 0.9rem;
 }
 
 .listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .listings-status {
   text-align: center;
-  padding: 48px;
+  padding: 2rem;
   font-size: 1.1rem;
+  color: #666;
 }
 
 .listings-status--error {
-  color: #c0392b;
+  color: #dc3545;
+  background-color: #f8d7da;
+  border-radius: 4px;
+  padding: 1rem;
 }
