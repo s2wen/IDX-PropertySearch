@@ -3,6 +3,7 @@ import { fetchProperties } from '../api/client';
 import PropertyCard from '../components/PropertyCard';
 import './ListingsPage.css';
 import PropertyFilters from '../components/PropertyFilters';
+import Pagination from '../components/Pagination';
 
 export default function ListingsPage() {
   const [properties, setProperties] = useState([]);
@@ -10,8 +11,10 @@ export default function ListingsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({});
+
+  const [itemsPerPage] = useState(21);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,8 +24,8 @@ export default function ListingsPage() {
       setError(null);
       try {
         const params = {
-          limit: 20,
-          offset: currentPage * 20,
+          limit: 21,
+          offset: (currentPage - 1) * itemsPerPage,
           ...filters
         };
         const data = await fetchProperties(params);
@@ -46,13 +49,23 @@ export default function ListingsPage() {
   
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
 
   const handleClearFilters = () => {
     setFilters({});
-    setCurrentPage(0);
+    setCurrentPage(1);
   };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scroll(0,0);
+  };
+
+  const totalPages = Math.ceil(total/itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPage * itemsPerPage, total);
 
   return (
     <div className="listings-page">
@@ -70,6 +83,14 @@ export default function ListingsPage() {
           <PropertyCard key={p.L_ListingID || p.id} property={p} />
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }

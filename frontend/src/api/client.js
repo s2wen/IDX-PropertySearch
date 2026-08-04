@@ -16,7 +16,7 @@ async function apiFetch(url, options={}){
             errorMessage = typeof errorData === 'object' 
                 ? (errorData.message || errorData.error || JSON.stringify(errorData))
                 : errorData;
-            throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
+            throw new Error(`HTTP ${response.status}: ${errorMessage || response.statusText}`);
         }catch(err){
             errorMessage = (err.text && typeof err.text === 'function') 
             ? await err.text() 
