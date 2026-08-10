@@ -76,7 +76,7 @@ export default function ListingsPage() {
         initialFilters={filters}
       />
       <p className="listings-count">
-        Showing {properties.length} of {total} properties
+        Showing {startIndex}-{endIndex} of {total} properties
       </p>
       <div className="listings-grid">
         {properties.map((p) => (
