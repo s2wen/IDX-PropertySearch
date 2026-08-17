@@ -2,10 +2,24 @@ import express from 'express';
 const router = express.Router();
 import db from '../db.js';
 
+const VALID_SORT = [
+    'L_SystemPrice',
+    'ListingContractDate', //date listed
+    'LM_Int2_3', //sqft 
+    'L_Keyword2' //beds
+];
+
+const SORT_COLUMN_MAP = {
+    'price': 'L_SystemPrice',
+    'date': 'ListingContractDate',
+    'sqft': 'LM_Int2_3',
+    'beds': 'L_Keyword2'
+};
+
 //property search w/ filters
 router.get('/', async (req, res) => {
     try{
-        const { city, zipcode, minPrice, maxPrice, beds, baths} = req.query;
+        const { city, zipcode, minPrice, maxPrice, beds, baths, sortBy, sortOrder = 'asc'} = req.query;
         const limit = parseInt(req.query.limit, 10) || 20;
         const offset = parseInt(req.query.offset, 10) || 0;
 
@@ -18,6 +32,21 @@ router.get('/', async (req, res) => {
 
         if(Number.isNaN(Number(offset)) || offset < 0){
             errors.push('offset must be a non-negative integer');
+        }
+
+        let sortColumn = null;
+        if(sortBy){
+            if(VALID_SORT.includes(sortBy)){
+                sortColumn = sortBy;
+            }else if(SORT_COLUMN_MAP[sortBy]){
+                sortColumn = SORT_COLUMN_MAP[sortBy];
+            }else{
+                errors.push(`Invalid sortBy value. Must be one of: ${Object.keys(SORT_COLUMN_MAP).join(', ')}`);
+            }
+        }
+
+        if(sortOrder && !['asc', 'desc'].includes(sortOrder.toLowerCase())){
+            errors.push('sortOrder must be either "asc" or "desc"');
         }
 
         if(minPrice!==undefined && (isNaN(Number(minPrice)) || Number(minPrice) < 0)){
@@ -40,6 +69,7 @@ router.get('/', async (req, res) => {
             return res.status(400).json({ error: 'Invalid query parameters', details: errors});
         }
 
+        
 
         const conditions = [];
         const params = [];
@@ -71,6 +101,12 @@ router.get('/', async (req, res) => {
 
         const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
+        let orderByClause = '';
+        if(sortColumn){
+            const order = sortOrder.toLowerCase() === 'desc' ? 'DESC' : 'ASC';
+            orderByClause = `ORDER BY ${sortColumn} ${order}`;
+        }
+
         //pagination
         const [countRows] = await db.query(
             `SELECT COUNT(*) AS total FROM rets_property ${whereClause}`, params
@@ -78,7 +114,7 @@ router.get('/', async (req, res) => {
         const total = countRows[0].total;
 
         const [rows] = await db.query(
-            `SELECT * FROM rets_property ${whereClause} LIMIT ? OFFSET ?`,
+            `SELECT * FROM rets_property ${whereClause} ${orderByClause} LIMIT ? OFFSET ?`,
             [...params, limit, offset]
         );
 
@@ -86,6 +122,8 @@ router.get('/', async (req, res) => {
             total,
             limit,
             offset,
+            sortBy: sortColumn || 'default',
+            sortOrder: sortOrder || 'asc',
             result: rows,
         });
 

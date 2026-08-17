@@ -4,6 +4,7 @@ import PropertyCard from '../components/PropertyCard';
 import './ListingsPage.css';
 import PropertyFilters from '../components/PropertyFilters';
 import Pagination from '../components/Pagination';
+import PropertySort from './PropertySort';
 
 export default function ListingsPage() {
   const [properties, setProperties] = useState([]);
@@ -15,6 +16,8 @@ export default function ListingsPage() {
   const [filters, setFilters] = useState({});
 
   const [itemsPerPage] = useState(21);
+  const [sortBy, setSortBy] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     let cancelled = false;
@@ -28,6 +31,12 @@ export default function ListingsPage() {
           offset: (currentPage - 1) * itemsPerPage,
           ...filters
         };
+
+        if (sortBy) {
+          params.sortBy = sortBy;
+          params.sortOrder = sortOrder;
+        }
+
         const data = await fetchProperties(params);
         if (!cancelled) {
           setProperties(data.result);
@@ -42,7 +51,7 @@ export default function ListingsPage() {
 
     load();
     return () => { cancelled = true; };
-  }, [filters, currentPage]);
+  }, [filters, currentPage, sortBy, sortOrder]);
 
   if (loading) return <p className="listings-status">Loading properties…</p>;
   if (error) return <p className="listings-status listings-status--error">{error}</p>;
@@ -50,16 +59,26 @@ export default function ListingsPage() {
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1);
+    setSortBy('');
+    setSortOrder('asc');
   };
 
   const handleClearFilters = () => {
     setFilters({});
     setCurrentPage(1);
+    setSortBy('');
+    setSortOrder('asc');
   };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scroll(0,0);
+  };
+
+  const handleSortChange = (newSortBy, newSortOrder) => {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder || 'asc');
+    setCurrentPage(1);
   };
 
   const totalPages = Math.ceil(total/itemsPerPage);
@@ -78,6 +97,13 @@ export default function ListingsPage() {
       <p className="listings-count">
         Showing {startIndex}-{endIndex} of {total} properties
       </p>
+
+      <PropertySort 
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSortChange={handleSortChange}
+      />
+
       <div className="listings-grid">
         {properties.map((p) => (
           <PropertyCard key={p.L_ListingID || p.id} property={p} />
