@@ -141,6 +141,33 @@ The frontend runs on port 3000, and can be accessed at the address `http://local
 ## Week 6
 Filter form and unit tests.
 
+New property filter component under components/PropertyFilters.jsx which handles filtering for city, ZIP code, min price, max price, beds (dropdown), baths (dropdown). Searching updates the listings page with only properties that match the filters. Clear button resets filters. Changing to different pages preserves current filters.
+
+Implemented Unit Testing for API client module and PropertyFilters component, consisting of Fetching properties with default parameters, calling backend correctly, and handling filters correctly for client module, and rendering filter inputs, populating fields with correct filter inputs, and calls onFilterChange properly when users apply filters for PropertyFilters component.
+
+---
+
+## Week 7
+Pagination controls and more unit testing.
+
+Added pagination with page numbers, previous/next buttons, and ellipsis, eg 1 ... 4 5 6 ... 24. Changing filters resets the page to page 1.
+
+Implemented Unit Testing for pagination, consisting of highlighting the correct page number, renders all page numbers correctly, disabling previous button on page 1 and next button on the last page.
+
+---
+
+## Week 8
+A full property detail page with routing, photo gallery, map, and open houses.
+
+Routes are set up with / for Listings page and /property/:id for PropertyDetailPage. Property cards are now clickable and leads to the detail page for that property, with price, address, stats (beds/baths/sqft/year built), description, property details, and open houses. Also has a Google Maps API which shows the location of the property and when clicked, opens a new page with the google map route to get to the property.
+
+---
+
+## Week 9
+
+### Sorting
+
+
 
 
 
