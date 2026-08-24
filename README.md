@@ -134,11 +134,13 @@ This will return ids that appear in both properties and openhouses.
 ## Week 5
 A React frontend that fetches and displays a grid of property cards.
 
-The frontend runs on port 3000, and can be accessed at the address http://localhost:3000
+The frontend runs on port 3000, and can be accessed at the address `http://localhost:3000`. This displays a grid of property cards fetched from the backend.
 
 ---
 
 ## Week 6
+Filter form and unit tests.
+
 
 
 
