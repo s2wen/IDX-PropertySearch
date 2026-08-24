@@ -1,9 +1,9 @@
 import {useEffect, useState}  from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { fetchPropertyDetail, fetchPropertyOpenHouses } from '../api/client';
-import PropertyImageGallery from './PropertyImageGallery';
+import PropertyImageGallery from '../components/PropertyImageGallery';
 import './PropertyDetailPage.css';
-import PropertyMap from './PropertyMap';
+import PropertyMap from '../components/PropertyMap';
 
 export default function PropertyDetailPage(){
     const { id } = useParams();

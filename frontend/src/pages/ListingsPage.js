@@ -4,7 +4,7 @@ import PropertyCard from '../components/PropertyCard';
 import './ListingsPage.css';
 import PropertyFilters from '../components/PropertyFilters';
 import Pagination from '../components/Pagination';
-import PropertySort from './PropertySort';
+import PropertySort from '../components/PropertySort';
 
 export default function ListingsPage() {
   const [properties, setProperties] = useState([]);
