@@ -51,7 +51,7 @@ export default function ListingsPage() {
 
     load();
     return () => { cancelled = true; };
-  }, [filters, currentPage, sortBy, sortOrder]);
+  }, [filters, currentPage, sortBy, sortOrder, itemsPerPage]);
 
   if (loading) return <p className="listings-status">Loading properties…</p>;
   if (error) return <p className="listings-status listings-status--error">{error}</p>;

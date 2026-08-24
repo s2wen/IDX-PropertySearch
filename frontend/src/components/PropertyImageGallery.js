@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import './PropertyImageGallery.css';
 
 export default function PropertyImageGallery({photos, propertyId}){
@@ -7,7 +7,17 @@ export default function PropertyImageGallery({photos, propertyId}){
 
 
     const imageUrls = parsePhotos(photos);
-    const hasImage = imageUrls && imageUrls.length!=0;
+    const hasImage = imageUrls && imageUrls.length!==0;
+
+    const goToPrevious = useCallback((e) => {
+        if (e) e.stopPropagation();
+        setSelectedIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1));
+    }, [imageUrls.length]);
+
+    const goToNext = useCallback((e) => {
+        if (e) e.stopPropagation();
+        setSelectedIndex((prev) => (prev === imageUrls.length - 1 ? 0 : prev + 1));
+    }, [imageUrls.length]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -38,7 +48,7 @@ export default function PropertyImageGallery({photos, propertyId}){
         };
 
 
-    }, [isLightboxOpen, selectedIndex, imageUrls.length]);
+    }, [isLightboxOpen, selectedIndex, imageUrls.length, goToNext, goToPrevious]);
 
     
 
@@ -53,15 +63,7 @@ export default function PropertyImageGallery({photos, propertyId}){
         document.body.style.overflow = 'unset';
     };
 
-    const goToPrevious = (e) => {
-        e.stopPropagation();
-        setSelectedIndex((prev) => (prev === 0 ? imageUrls.length - 1 : prev - 1));
-    };
-
-    const goToNext = (e) => {
-        e.stopPropagation();
-        setSelectedIndex((prev) => (prev === imageUrls.length - 1 ?  0 : prev + 1));
-    };
+    
 
     if(!hasImage){
         return (
@@ -78,6 +80,7 @@ export default function PropertyImageGallery({photos, propertyId}){
                     <img 
                         src={imageUrls[selectedIndex]} 
                         className="gallery-main-image"
+                        alt="Property Gallery"
                     />
                     <div className="gallery-click-hint">Click to enlarge</div>
                 </div>
@@ -108,6 +111,7 @@ export default function PropertyImageGallery({photos, propertyId}){
                         <img 
                             src={imageUrls[selectedIndex]} 
                             className="lightbox-image"
+                            alt="Lightbox"
                         />
 
                         {imageUrls.length > 1 && (
@@ -142,14 +146,13 @@ export default function PropertyImageGallery({photos, propertyId}){
 function parsePhotos(photos){
     if(!photos) return[];
     // parse L_Photos JSON string
-    let photoUrl = null;
     try {
         if (photos) {
             const photosParsed = JSON.parse(photos);
             return photosParsed;
         }
     } catch (e) {
-        photoUrl = null;
+        return e;
     }
 
 }

@@ -13,10 +13,6 @@ export default function PropertySort({ sortBy, sortOrder, onSortChange}){
 
     };
 
-    const handleSortOrderChange = (e) => {
-        onSortChange(sortBy, e.target.value);
-    };
-
     const handleToggleOrder = (e) => {
         const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
         onSortChange(sortBy, newOrder);

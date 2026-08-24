@@ -147,7 +147,7 @@ export default function PropertyDetailPage(){
                 </div>
             )}
 
-            {openHouses.length == 0 && (
+            {openHouses.length === 0 && (
                 <div className="detail-section">
                     <h2 className="detail-section-title">Open Houses</h2>
                     <p className="detail-description">No open houses scheduled</p>
