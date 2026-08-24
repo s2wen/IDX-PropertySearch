@@ -162,7 +162,6 @@ router.get('/:id/openhouses', async (req, res) => {
 
         res.json(openHouseRows);
     }catch(err){
-        console.log(err);
         return res.status(500).json({error: 'Internal Server Error'});
     }
 });

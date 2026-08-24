@@ -13,10 +13,6 @@ export default function PropertyDetailPage(){
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    console.log('Property ID from URL:', id);
-    console.log('Type of ID:', typeof id);
-    console.log('Length of ID:', id?.length);
-
     useEffect(() => {
         let cancelled = false;
         
@@ -33,7 +29,6 @@ export default function PropertyDetailPage(){
                 try{
                     //openhouses
                     const openhouseData = await fetchPropertyOpenHouses(id);
-                    console.log('Property data received:', propertyData);
                     if(!cancelled){
                         setOpenHouses(openhouseData || []);
                     }

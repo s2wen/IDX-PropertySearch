@@ -29,12 +29,10 @@ export default function PropertyCard({ property }) {
     }
   };
 
-  // Format price with commas
   const formattedPrice = property.L_SystemPrice 
     ? `$${property.L_SystemPrice.toLocaleString()}`
     : 'Price not available';
 
-  // Format address
   const address = [
     property.L_Address,
     property.L_City,
