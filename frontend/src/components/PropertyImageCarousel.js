@@ -24,7 +24,7 @@ export default function PropertyImageCarousel({photos, listingId}){
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const imageUrls = parsePhotos(photos);
-    const hasImage = imageUrls && imageUrls.length!=0;
+    const hasImage = imageUrls && imageUrls.length!==0;
 
     const goToPrevious = (e) => {
         e.stopPropagation();
@@ -50,6 +50,7 @@ export default function PropertyImageCarousel({photos, listingId}){
                 <img
                     src={imageUrls[currentIndex]}
                     className="carousel-image"
+                    alt="Property"
                 />
                 {imageUrls.length>1&&(
                     <>

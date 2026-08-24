@@ -1,9 +1,9 @@
 import {useEffect, useState}  from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { fetchPropertyDetail, fetchPropertyOpenHouses } from '../api/client';
-import PropertyImageGallery from './PropertyImageGallery';
+import PropertyImageGallery from '../components/PropertyImageGallery';
 import './PropertyDetailPage.css';
-import PropertyMap from './PropertyMap';
+import PropertyMap from '../components/PropertyMap';
 
 export default function PropertyDetailPage(){
     const { id } = useParams();
@@ -12,10 +12,6 @@ export default function PropertyDetailPage(){
     const [openHouses, setOpenHouses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    console.log('Property ID from URL:', id);
-    console.log('Type of ID:', typeof id);
-    console.log('Length of ID:', id?.length);
 
     useEffect(() => {
         let cancelled = false;
@@ -33,7 +29,6 @@ export default function PropertyDetailPage(){
                 try{
                     //openhouses
                     const openhouseData = await fetchPropertyOpenHouses(id);
-                    console.log('Property data received:', propertyData);
                     if(!cancelled){
                         setOpenHouses(openhouseData || []);
                     }
@@ -152,7 +147,7 @@ export default function PropertyDetailPage(){
                 </div>
             )}
 
-            {openHouses.length == 0 && (
+            {openHouses.length === 0 && (
                 <div className="detail-section">
                     <h2 className="detail-section-title">Open Houses</h2>
                     <p className="detail-description">No open houses scheduled</p>
