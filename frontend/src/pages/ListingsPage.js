@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchProperties } from '../api/client';
-import PropertyCard from '../components/PropertyCard';
+import PropertyCard from '../components/PropertyCard/PropertyCard';
 import './ListingsPage.css';
 import PropertyFilters from '../components/PropertyFilters';
 import Pagination from '../components/Pagination';
