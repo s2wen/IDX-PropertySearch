@@ -1,4 +1,4 @@
-import { fetchProperties, fetchPropertyDetail, fetchPropertyOpenHouses } from './client';
+import { fetchProperties, fetchPropertyDetail } from './client';
 
 // Mock fetch
 global.fetch = jest.fn();
