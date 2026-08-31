@@ -7,7 +7,6 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "babel-jest": "^30.4.1",
-    "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "jest-fetch-mock": "^4.2.0"
   },
@@ -31,7 +30,7 @@
       "./frontend/src/setupTests.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(@testing-library|@babel)/)"
+      "node_modules/(?!(react-router-dom|react-router|@testing-library|@babel)/)"
     ]
   },
   "presets": [
