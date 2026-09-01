@@ -16,7 +16,9 @@ Backend
 - mysql2 ^3.22.5
 
 Container: Docker 29.5.3
+
 Testing: jest ^30.5.0, supertest ^7.2.2
+
 Linting: eslint ^8.57.1
 
 ---
