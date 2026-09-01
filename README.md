@@ -2,6 +2,23 @@
 
 A Zillow/Redfin-style property search experience backed by real MLS data.
 
+<img width="1117" height="823" alt="Screenshot 2026-09-01 at 8 14 16 AM" src="https://github.com/user-attachments/assets/01e84b9f-4fba-4983-b38c-4ff7fd5288e6" />
+
+## Tech Stack
+
+Frontend
+- React ^19.2.7,
+- react-router-dom ^6.30.0
+
+Backend
+- Node: v22.20.0
+- Express ^5.2.1
+- mysql2 ^3.22.5
+
+Container: Docker 29.5.3
+Testing: jest ^30.5.0, supertest ^7.2.2
+Linting: eslint ^8.57.1
+
 ---
 
 ## Week 1
