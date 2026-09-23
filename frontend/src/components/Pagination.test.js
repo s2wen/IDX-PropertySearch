@@ -115,7 +115,8 @@ describe('Pagination', () => {
       />
     );
 
-    const ellipsisElements = screen.getAllByText('…');
+    const ellipsis = screen.getAllByText('…');
+    expect(ellipsis).toHaveLength(1);
   });
 
   test('should not show ellipsis when total pages fit without ellipsis', () => {

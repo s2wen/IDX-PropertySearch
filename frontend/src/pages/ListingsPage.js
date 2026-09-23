@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { fetchProperties } from '../api/client';
-import PropertyCard from '../components/PropertyCard';
+import PropertyCard from '../components/PropertyCard/PropertyCard';
 import './ListingsPage.css';
 import PropertyFilters from '../components/PropertyFilters';
 import Pagination from '../components/Pagination';
-import PropertySort from './PropertySort';
+import PropertySort from '../components/PropertySort';
 
 export default function ListingsPage() {
   const [properties, setProperties] = useState([]);
@@ -51,7 +51,7 @@ export default function ListingsPage() {
 
     load();
     return () => { cancelled = true; };
-  }, [filters, currentPage, sortBy, sortOrder]);
+  }, [filters, currentPage, sortBy, sortOrder, itemsPerPage]);
 
   if (loading) return <p className="listings-status">Loading properties…</p>;
   if (error) return <p className="listings-status listings-status--error">{error}</p>;

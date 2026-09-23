@@ -2,10 +2,30 @@
 
 A Zillow/Redfin-style property search experience backed by real MLS data.
 
+<img width="1117" height="823" alt="Screenshot 2026-09-01 at 8 14 16 AM" src="https://github.com/user-attachments/assets/01e84b9f-4fba-4983-b38c-4ff7fd5288e6" />
+
+## Tech Stack
+
+### Frontend
+- **[React](https://reactjs.org/)** (19.2.7)
+- **[React Router](https://reactrouter.com/)** (6.30.0)
+
+### Backend
+- **[Node.js](https://nodejs.org/)** (22.20.0)
+- **[Express](https://expressjs.com/)** (5.2.1)
+- **[MySQL](https://www.mysql.com/)** (v8.0)
+- **[mysql2](https://github.com/sidorares/node-mysql2)** (3.22.5)
+
+### Testing
+- **[Jest](https://jestjs.io/)** (30.5.0)
+- **[React Testing Library](https://testing-library.com/react)** (7.2.2)
+
+### Development
+-  **[ESLint](https://eslint.org/)** (v8.57.1)
+
 ---
 
-## Week 1
-Environment setup and Database import. MySQL running in Docker with both tables populated and queryable.
+## Environment setup and Database import
 
 Create MySQL 8 container:
 ```bash
@@ -32,21 +52,23 @@ SELECT COUNT(*) FROM rets_openhouse
 
 These should both return non-zero numbers.
 
+### Indexing
+Check which indexes the database may already have with command `SHOW INDEX FROM rets_property;`.
+For columns without an index, add an index through `CREATE INDEX [index name] ON rets_property ([column name]);` There may be an error at this point with the message "ERROR 1067 (42000): Invalid default value for 'active_check'". This is because MySQL8 strict mode may reject some default value the sql file holds. Fix this by temporarily disabling strict mode with command `SET sql_mode = '';`.
+
+Running EXPLAIN on the table before and after adding indexes should show that the number of rows it checks decreases, and that your new indexes are being used. The following is an example of an EXPLAIN you can run.
+```
+EXPLAIN SELECT * FROM rets_property WHERE L_SystemPrice >= 300000;
+```
 
 ---
 
-## Week 2
-Node/Express server and health checkpoint.
 
-### Node.js project setup
-Initialize Node.js project in a backend folder.
+## Set up Backend
+
+Install the necessary dependencies:
 ```
-mkdir backend
 cd backend
-npm init
-```
-Then, install the necessary dependencies:
-```
 npm install express, mysql2, dotenv, cors
 npm install --save-dev nodemon
 ```
@@ -59,6 +81,7 @@ DB_NAME=
 DB_PORT=
 PORT=
 ```
+
 ### Health Check
 Run the project with 
 ```
@@ -69,16 +92,29 @@ And check the health endpoint:
 ```
 curl http://localhost:5001/api/health
 ```
+
 This should return the connection status to the database.
 
 ---
 
-## Week 3
-Property search endpoint with filters and indexing.
+## Set up Frontend
 
-### Search Endpoint
-Make sure the docker container is running with `docker ps`, and run the server with `npm run dev`.
+```
+cd ../frontend
+npm install
+npm start
+```
+And add the google maps API to the env with this shape:
+```
+REACT_APP_GOOGLE_MAPS_API_KEY
+```
 
+You should now be able to access the app on `http://localhost:3000/`
+
+---
+## APIs
+
+### GET /api/properties
 When queried with the following parameters:
 ```
 GET
@@ -96,30 +132,23 @@ curl "http://localhost:5001/api/properties?city=Acton&limit=20&offset=0"
 ```
 Where parameters can be exchanged for other values, and separated by &.
 
-### Indexing
-Check which indexes the database may already have with command `SHOW INDEX FROM rets_property;`.
-For columns without an index, add an index through `CREATE INDEX [index name] ON rets_property ([column name]);` There may be an error at this point with the message "ERROR 1067 (42000): Invalid default value for 'active_check'". This is because MySQL8 strict mode may reject some default value the sql file holds. Fix this by temporarily disabling strict mode with command `SET sql_mode = '';`.
+### GET /api/properties/:id
 
-Running EXPLAIN on the table before and after adding indexes should show that the number of rows it checks decreases, and that your new indexes are being used. The following is an example of an EXPLAIN you can run.
+Example:
 ```
-EXPLAIN SELECT * FROM rets_property WHERE L_SystemPrice >= 300000;
+curl http://localhost:5001/api/properties/1077426281
 ```
 
----
+Where id is between 9 to 10 digits, should return the full property object for this single property, or 404 if it doesn't exist.
 
-## Week 4
-Property by ID and open houses by property ID.
+### GET /api/properties/:id/openhouses
 
-To get a full property object:
-```
-curl "http://localhost:5001/api/properties/[id]"
-```
-
-To check openhouse events for a specific property:
+Example:
 ```
 curl "http://localhost:5001/api/properties/[id]/openhouses"
 ```
-This may return an empty array. To check using an id that has openhouses, can use the following command to check in the sql files.
+
+Which returns open house events for this property in the form of an array. This may return an empty array. To check using an id that has openhouses, can use the following command to check in the sql files.
 
 ```
 SELECT p.L_ListingID 
@@ -130,42 +159,33 @@ SELECT p.L_ListingID
 This will return ids that appear in both properties and openhouses.
 
 ---
+## Database Schema
 
-## Week 5
-A React frontend that fetches and displays a grid of property cards.
+### rets_property
 
-The frontend runs on port 3000, and can be accessed at the address `http://localhost:3000`. This displays a grid of property cards fetched from the backend.
+| Field | Description |
+| --- | --- |
+| L_ListingID   | A unique listing id for each property |
+| L_Address | Address of the property |
+| L_Zip | Zip code of the property |
+| LM_Int2_3 | Square Feet of the property |
+| L_Keyword2| Number of beds |
+| LM_Dec_3 | Number of baths |
+| L_SystemPrice | The price of the property |
+| ListingContractDate | Date the property was listed |
 
----
-
-## Week 6
-Filter form and unit tests.
-
-New property filter component under components/PropertyFilters.jsx which handles filtering for city, ZIP code, min price, max price, beds (dropdown), baths (dropdown). Searching updates the listings page with only properties that match the filters. Clear button resets filters. Changing to different pages preserves current filters.
-
-Implemented Unit Testing for API client module and PropertyFilters component, consisting of Fetching properties with default parameters, calling backend correctly, and handling filters correctly for client module, and rendering filter inputs, populating fields with correct filter inputs, and calls onFilterChange properly when users apply filters for PropertyFilters component.
-
----
-
-## Week 7
-Pagination controls and more unit testing.
-
-Added pagination with page numbers, previous/next buttons, and ellipsis, eg 1 ... 4 5 6 ... 24. Changing filters resets the page to page 1.
-
-Implemented Unit Testing for pagination, consisting of highlighting the correct page number, renders all page numbers correctly, disabling previous button on page 1 and next button on the last page.
+### rets_openhouse
+| Field | Description |
+| --- | --- |
+| L_ListingID | A unique listing id for each property, same as for rets_property|
+| OH_StartDate | The start date of the openhouse |
+| OH_StartTime | Starting time of the openhouse |
 
 ---
+## Testing
+For frontend, run `npm run test` in the frontend directory for all the unit tests, which include tests for PropertyCard, Pagination, Filters, and the client. To check coverage, run `npm test:coverage`.
 
-## Week 8
-A full property detail page with routing, photo gallery, map, and open houses.
-
-Routes are set up with / for Listings page and /property/:id for PropertyDetailPage. Property cards are now clickable and leads to the detail page for that property, with price, address, stats (beds/baths/sqft/year built), description, property details, and open houses. Also has a Google Maps API which shows the location of the property and when clicked, opens a new page with the google map route to get to the property.
-
----
-
-## Week 9
-
-### Sorting
+For backend, run `npm test` in the backend directory for all the unit tests, which includes unit tests for properties.js and checks all the property routes. To check coverage, run `npm test:coverage`.
 
 
 

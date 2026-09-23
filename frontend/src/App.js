@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import ListingsPage from './components/ListingsPage';
+import ListingsPage from './pages/ListingsPage';
 // import PropertyDetailPage 
-import PropertyDetailPage from './components/PropertyDetailPage';
+import PropertyDetailPage from './pages/PropertyDetailPage';
 import './App.css';
 import { ErrorBoundary, getErrorMessage } from "react-error-boundary";
 
